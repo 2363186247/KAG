@@ -25,7 +25,7 @@ log:
 project:
   biz_scene: default
   host_addr: http://127.0.0.1:8887
-  id: "1"
+  id: '3'
   language: en
   namespace: MedReports
 #------------project configuration end----------------#
@@ -59,7 +59,7 @@ kag_builder_pipeline:
   num_threads_per_chain: 1
   num_chains: 16
   scanner:
-    type: IU_Xray_dataset_scanner # kag.builder.component.scanner.dataset_scanner.MusiqueCorpusScanner
+    type: IU_Xray_dataset_scanner # kag.builder.component.scanner.dataset_scanner.IU_XRayCorpusScanner
 #------------kag-builder configuration end----------------#
 
 #------------kag-solver configuration start----------------#
