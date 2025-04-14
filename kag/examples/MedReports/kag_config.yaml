@@ -1,14 +1,14 @@
 #------------project configuration start----------------#
 openie_llm: &openie_llm
-  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
-  base_url: https://api.chatanywhere.tech/v1
-  model: gpt-4o-mini
+  api_key: AIzaSyDk5NMD5FkLorOMN6rXUL7JYgZoV7S3ymY
+  base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+  model: gemini-2.0-flash
   type: maas
 
 chat_llm: &chat_llm
-  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
-  base_url: https://api.chatanywhere.tech/v1
-  model: gpt-4o-mini
+  api_key: AIzaSyDk5NMD5FkLorOMN6rXUL7JYgZoV7S3ymY
+  base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+  model: gemini-2.0-flash
   type: maas
 
 vectorize_model: &vectorize_model

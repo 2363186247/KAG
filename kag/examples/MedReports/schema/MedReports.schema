@@ -1,130 +1,301 @@
 namespace MedReports
 
-Chunk(文本块): EntityType
-     properties:
-        content(内容): Text
-          index: TextAndVector
+# --- 概念类型定义 ---
 
-ArtificialObject(人造物体): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
+AnatomicalStructure(解剖结构): ConceptType # [3, 15] 定义概念类型：解剖结构
+    hypernymPredicate: isA # [15] 指定isA为上下文谓词
 
-Astronomy(天文学): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
+# --- 基础实体类型定义 (作为后续关联或属性的基础) ---
 
-Building(建筑): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
+Finding(影像学发现): EntityType # [3] 定义实体类型：影像学发现
+    properties:
+        location(位置): Text # [10] 定义属性：位置
+            desc: "发现所在的具体解剖位置或区域"
+            constraint: MultiValue # [7, 11] 允许多个位置
+        description(描述): Text # [8] 内建属性，补充描述
+        laterality(侧别): Text # [10] 定义属性：侧别
+            desc: "发现位于左侧、右侧或双侧"
+            constraint: Enum="Left, Right, Bilateral" # [11] 枚举约束
+        status(状态): Text # [10] 定义属性：状态
+            desc: "与既往检查比较的状态"
+            constraint: Enum="Stable, Unchanged, Increased, Decreased, Improved, Worsened, New, Resolved" # [11] 枚举约束
 
-Creature(生物): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Concept(概念): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Date(日期): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-GeographicLocation(地理位置): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Keyword(关键词): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Medicine(药物): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-
-NaturalScience(自然科学): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Organization(组织机构): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Person(人物): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Transport(运输): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Works(作品): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Others(其他): EntityType
-     properties:
-        desc(描述): Text
-            index: TextAndVector
-        semanticType(语义类型): Text
-            index: Text
-
-Event(事件): EventType
-     properties:
-        subject(主体): Person
-        participants(参与者): Person
+MedicalDevice(医疗器械): EntityType # [3] 定义实体类型：医疗器械
+    properties:
+        location(位置): Text
+            desc: "器械所在位置"
             constraint: MultiValue
-        time(时间): Date
-        location(地点): GeographicLocation
-        abstract(摘要): Text
-            index: TextAndVector
-        type(事件类型): Text
-            index: Text
 
+ProcedureMarker(手术标记): EntityType # [3] 定义实体类型：手术标记
+    properties:
+        location(位置): Text
+            desc: "手术标记所在位置"
+            constraint: MultiValue
+        procedureType(手术类型): Text
+            desc: "与标记相关的手术类型"
 
-SemanticConcept(语义概念): EntityType
-     properties:
-        desc(内容): Text
-          index: Text
+# --- 具体发现的实体类型定义 ---
+
+Cardiomegaly(心脏扩大): EntityType # [3] 定义实体类型：心脏扩大
+    desc: "心脏轮廓增大"
+    properties:
+        degree(程度): Text # [10] 定义属性：程度
+            desc: "心脏扩大的程度"
+            constraint: Enum="Borderline, Mild, Moderate, Severe" # [11] 枚举约束
+
+PulmonaryEdema(肺水肿): Finding # [3] 定义实体类型：肺水肿 (这里也可以继承Finding，但为了清晰，直接定义为EntityType)
+    desc: "肺部血管外液体积聚的表现"
+
+Consolidation(实变): Finding # [3] 定义实体类型：实变
+    desc: "肺泡腔内充满液体或细胞，导致密度增高"
+    properties:
+        appearance(形态): Text
+             desc: "实变的具体形态描述，如'patchy', 'focal'"
+
+PleuralEffusion(胸腔积液): Finding # [3] 定义实体类型：胸腔积液
+    desc: "胸膜腔内液体异常积聚"
+    properties:
+        volume(积液量): Text # [10] 定义属性：积液量
+            desc: "胸腔积液的量"
+            constraint: Enum="Small, Moderate, Large" # [11] 枚举约束
+
+Pneumothorax(气胸): Finding # [3] 定义实体类型：气胸
+    desc: "胸膜腔内气体异常积聚"
+    properties:
+        size(大小): Text # [10] 定义属性：大小/测量值 (如报告[70, 92]提及测量)
+            desc: "气胸的大小或测量距离"
+        volume(气胸量): Text
+            desc: "气胸的量级"
+            constraint: Enum="Small, Moderate, Large" # [11] 枚举约束
+
+Opacity(浑浊影): Finding # [3] 定义实体类型：浑浊影/不透光影
+    desc: "X线片上表现为密度增高的区域"
+    properties:
+        appearance(形态): Text # [10] 定义属性：形态
+            desc: "浑浊影的具体形态描述"
+            constraint: Enum="Interstitial, Alveolar, Streaky, Patchy, Irregular, Diffuse, Focal" # [11] 枚举约束 (基于报告[4, 19, 28, 50, 79])
+
+Atelectasis(肺不张): Finding # [3] 定义实体类型：肺不张
+    desc: "肺组织塌陷或扩张不全"
+    properties:
+        locationSpecificity(具体部位): Text
+             desc: "肺不张的具体部位，如'basilar', 'subsegmental'" # [22, 61, 98]
+
+Emphysema(肺气肿): Finding # [3] 定义实体类型：肺气肿
+    desc: "肺泡壁破坏，含气腔异常增大"
+    properties:
+        type(类型): Text
+            desc: "肺气肿的类型，如'bullous'" # [4]
+
+Granuloma(肉芽肿): Finding # [3] 定义实体类型：肉芽肿
+    desc: "通常由慢性炎症引起的局灶性结节状病变"
+    properties:
+        calcification(钙化): Text # [10] 定义属性：钙化状态
+            desc: "肉芽肿是否钙化"
+            constraint: Enum="Calcified, Non-calcified, Partially calcified" # [11] 枚举约束 (基于报告[24, 25, 55, 58, 61, 74, 79, 86, 95])
+
+Nodule(结节): Finding # [3] 定义实体类型：结节
+    desc: "肺内小的、类圆形的病灶"
+    properties:
+        size(大小): Text # [10] 定义属性：大小
+            desc: "结节的直径或尺寸" # [55]
+        calcification(钙化): Text
+            desc: "结节是否钙化"
+            constraint: Enum="Calcified, Non-calcified, Partially calcified"
+
+DegenerativeChange(退行性变): Finding # [3] 定义实体类型：退行性变
+    desc: "组织或器官因老化或磨损发生的改变"
+    properties:
+        severity(严重程度): Text
+            desc: "退行性变的程度"
+            constraint: Enum="Mild, Moderate, Severe" # [11] (基于报告[21, 33, 57, 64, 65, 86, 89, 91, 93])
+
+Spondylosis(脊柱病): DegenerativeChange # [3] 定义实体类型：脊柱病 (继承自退行性变)
+    desc: "脊柱的退行性改变，特指椎体和椎间盘" # [22, 38, 97]
+
+Osteophyte(骨赘): DegenerativeChange # [3] 定义实体类型：骨赘/骨刺
+    desc: "骨骼边缘的骨质增生" # [20, 49, 69, 95]
+
+Scarring(瘢痕): Finding # [3] 定义实体类型：瘢痕
+    desc: "组织修复后形成的纤维组织" # [4, 79, 80]
+
+Thickening(增厚): Finding # [3] 定义实体类型：增厚
+    desc: "组织厚度增加"
+    properties:
+        structureAffected(受累结构): Text
+            desc: "哪个结构增厚，如'pleural'" # [20, 56]
+
+InterstitialMarkings(间质纹理): Finding # [3] 定义实体类型：间质纹理
+    desc: "肺间质结构的影像学表现"
+    properties:
+        pattern(模式): Text
+            desc: "间质纹理的模式，如'increased', 'irregular', 'prominent'" # [28, 50, 69, 79, 89]
+
+Hyperinflation(过度充气): Finding # [3] 定义实体类型：过度充气/肺容量增大
+    desc: "肺部含气量过多，体积增大" # [20, 28, 37, 39, 44, 49]
+
+Scoliosis(脊柱侧弯): Finding # [3] 定义实体类型：脊柱侧弯
+    desc: "脊柱向侧方弯曲" # [36, 65]
+
+Kyphosis(脊柱后凸): Finding # [3] 定义实体类型：脊柱后凸
+    desc: "脊柱向后方过度弯曲" # [78]
+
+Hernia(疝): Finding # [3] 定义实体类型：疝
+    desc: "组织或器官通过薄弱点或孔隙突出"
+    properties:
+        herniaType(疝类型): Text
+            desc: "疝的具体类型，如'Hiatal'" # [67]
+
+ForeignBody(异物): Finding # [3] 定义实体类型：异物
+    desc: "体内异常存在的物体" # [99]
+
+# --- 具体器械/标记的实体类型定义 ---
+
+SurgicalClips(手术夹): ProcedureMarker # [3] 定义实体类型：手术夹
+    desc: "手术中用于止血或标记的夹子" # [20, 42, 66, 84, 95]
+
+SternotomyWires(胸骨切开术钢丝): ProcedureMarker # [3] 定义实体类型：胸骨切开术钢丝
+    desc: "胸骨正中切开术后用于固定的钢丝" # [2, 68, 79]
+
+SpinalHardware(脊柱内固定物): MedicalDevice # [3] 定义实体类型：脊柱内固定物
+    desc: "用于脊柱融合或固定的植入物" # [23, 78]
+
+Stent(支架): MedicalDevice # [3] 定义实体类型：支架
+    desc: "用于支撑血管或其他管腔结构的器械" # [68] (报告中提到coronary vascular stent)
+
+TracheostomyTube(气管切开导管): MedicalDevice # [3] 定义实体类型：气管切开导管
+    desc: "经气管切开置入的气道导管" # [64]
+
+# --- 解剖结构实体类型定义 ---
+
+CardiacSilhouette(心影): AnatomicalStructure # [3] 定义实体类型：心影
+    desc: "X线片上心脏的轮廓影像"
+    properties:
+        size(大小): Text # [10] 定义属性：大小
+            desc: "心影的大小评估"
+            constraint: Enum="Normal limits, Borderline enlarged, Enlarged, Upper limits of normal" # [11] (基于报告[1, 4, 6, 17, 21, 25, 26, 27, 28, 30, 31, ...])
+        contour(轮廓): Text # [10] 定义属性：轮廓
+            desc: "心影的边缘形态" # [4, 6, 27, 33, 60, 67, 70, 86, 89, 91, 94, 95, 96]
+    relations:
+        hasFinding(有发现): Finding # [10] 定义关系：有发现
+            constraint: MultiValue # [11]
+
+Mediastinum(纵隔): AnatomicalStructure # [3] 定义实体类型：纵隔
+    desc: "两侧胸腔之间，包含心脏、大血管、气管等的区域"
+    properties:
+        size(大小): Text # [10] 定义属性：大小
+            desc: "纵隔的大小评估"
+            constraint: Enum="Normal limits, Enlarged" # [11] (基于报告[1, 2, 18, 40])
+        contour(轮廓): Text # [10] 定义属性：轮廓
+            desc: "纵隔的边缘形态" # [4, 6, 27, 28, 33, 36, 39, 40, 45, 47, 48, 52, 53, 56, ...])
+    relations:
+        hasFinding(有发现): Finding
+            constraint: MultiValue
+
+Lungs(肺): AnatomicalStructure # [3] 定义实体类型：肺
+    desc: "主要的呼吸器官"
+    properties:
+        inflation(充气状态): Text # [10] 定义属性：充气状态
+            desc: "肺的扩张程度"
+            constraint: Enum="Normal, Hyperexpanded, Hyperinflated, Low volume, Reduced volume, Well expanded, Clear and expanded" # [11] (基于报告[4, 20, 25, 33, 36, 37, 39, 44, 48, 49, 52, 57, 60, 72, 73, 75, 84, 98, 100])
+        clarity(清晰度): Text # [10] 定义属性：清晰度
+            desc: "肺野是否清晰"
+            constraint: Enum="Clear, Obscured, Grossly clear" # [11] (基于报告[2, 11, 18, 22, 26, 29, 30, 33, 35, 38, 42, 43, 45, 47, 51, 58, 63, 65, 66, 68, 71, 72, 74, 75, 76, 77, 79, 80, 90, 91, 93, 95, 96, 97, 99, 100])
+    relations:
+        hasFinding(有发现): Finding
+            constraint: MultiValue
+        hasDevice(有器械): MedicalDevice
+            constraint: MultiValue
+        hasProcedureMarker(有手术标记): ProcedureMarker
+             constraint: MultiValue
+
+PulmonaryVasculature(肺血管系统): AnatomicalStructure # [3] 定义实体类型：肺血管系统
+    desc: "肺部的血管网络"
+    properties:
+        appearance(表现): Text # [10] 定义属性：表现
+            desc: "肺血管系统的影像学表现"
+            constraint: Enum="Normal limits, Enlarged, Prominent, Unremarkable, Normal vascularity" # [11] (基于报告[5, 11, 18, 26, 29, 35, 36, 40, 54, 68, 71, 83, 91, 94])
+
+Pleura(胸膜): AnatomicalStructure # [3] 定义实体类型：胸膜
+    desc: "覆盖在肺表面和胸廓内壁的膜"
+    relations:
+        hasFinding(有发现): Finding # [10] 胸膜可以有积液、气胸、增厚等发现
+            constraint: MultiValue
+
+ThoracicSpine(胸椎): AnatomicalStructure # [3] 定义实体类型：胸椎
+    desc: "构成胸廓后壁的脊柱部分"
+    properties:
+        alignment(排列): Text
+            desc: "胸椎的排列情况"
+    relations:
+        hasFinding(有发现): Finding # [10] 胸椎可以有退行性变、脊柱病、侧弯、后凸、骨赘等
+            constraint: MultiValue # [11] (如报告[6, 21, 22, 32, 33, 38, 39, 44, 49, 50, 56, 57, 64, 65, 68, 69, 78, 86, 89, 91, 93, 95, 97])
+
+Aorta(主动脉): AnatomicalStructure # [3] 定义实体类型：主动脉
+    desc: "身体最大的动脉"
+    properties:
+        appearance(形态): Text # [10] 定义属性：形态
+            desc: "主动脉的形态描述"
+            constraint: Enum="Tortuous, Ectatic, Atherosclerotic changes" # [11] (基于报告[32, 56, 61, 69, 78, 79])
+
+Diaphragm(膈肌): AnatomicalStructure # [3] 定义实体类型：膈肌
+    desc: "分隔胸腔和腹腔的肌肉"
+    properties:
+        position(位置): Text # [10] 定义属性：位置
+            desc: "膈肌的位置，如是否抬高" # [66]
+        contour(轮廓): Text # [10] 定义属性：轮廓
+            desc: "膈肌的形态，如是否平坦" # [39, 44, 69]
+
+Ribs(肋骨): AnatomicalStructure # [3] 定义实体类型：肋骨
+    desc: "构成胸廓侧壁和前壁的骨骼"
+    relations:
+        hasFinding(有发现): Finding # [10] 肋骨可能有畸形、骨折等
+            constraint: MultiValue # [11] (如报告[49])
+
+Clavicle(锁骨): AnatomicalStructure # [3] 定义实体类型：锁骨
+    desc: "连接肩胛骨和胸骨的骨骼"
+    relations:
+        hasFinding(有发现): Finding # [10] 锁骨可能有畸形等
+            constraint: MultiValue # [11] (如报告[71])
+
+Trachea(气管): AnatomicalStructure # [3] 定义实体类型：气管
+    desc: "连接喉部和支气管的管道"
+    properties:
+        position(位置): Text # [10] 定义属性：位置
+            desc: "气管的位置，如是否居中" # [51, 99]
+            constraint: Enum="Midline, Shifted" # [11]
+
+OsseousStructures(骨性结构): AnatomicalStructure # [3] 定义实体类型：骨性结构
+    desc: "泛指胸部的骨骼结构"
+    properties:
+        integrity(完整性): Text # [10] 定义属性：完整性
+            desc: "骨骼结构是否完整，有无急性异常" # [17, 29, 30, 42, 45, 47, 54, 55, 58, 71, 81, 82, 84, 90, 94]
+            constraint: Enum="Intact, No acute abnormality, Deformity, Fracture"
+
+SoftTissues(软组织): AnatomicalStructure # [3] 定义实体类型：软组织
+    desc: "胸部的肌肉、脂肪等非骨性、非器官结构"
+    properties:
+        appearance(表现): Text # [10] 定义属性：表现
+            desc: "软组织的影像学表现" # [30, 58, 77]
+            constraint: Enum="Unremarkable, Grossly unremarkable"
+
+# --- 报告级别的实体 (可选) ---
+# 可以定义一个顶层实体来组织报告信息，但这超出了从报告内容提取实体和属性的范围
+
+# MedicalReportDocument(医学报告文档): EntityType
+#     properties:
+#         reportId(报告ID): Text
+#             constraint: NotNull
+#         reportText(报告全文): Text
+#         examinationType(检查类型): Text
+#             constraint: Enum="Chest X-ray, CT, MRI"
+#         # ... 其他元数据
+#     relations:
+#         mentionsStructure(提及结构): AnatomicalStructure
+#             constraint: MultiValue
+#         mentionsFinding(提及发现): Finding
+#             constraint: MultiValue
+#         mentionsDevice(提及器械): MedicalDevice
+#             constraint: MultiValue
+#         mentionsProcedureMarker(提及手术标记): ProcedureMarker
+#             constraint: MultiValue
