@@ -1,5 +1,10 @@
 namespace MedReports
 
+Chunk(文本块): EntityType
+     properties:
+        content(内容): Text
+          index: TextAndVector
+
 AnatomicalStructure(解剖结构): EntityType
     desc: "人体解剖学中的结构单元，如器官、骨骼或血管等"
 
