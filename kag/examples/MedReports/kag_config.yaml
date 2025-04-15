@@ -1,14 +1,14 @@
 #------------project configuration start----------------#
 openie_llm: &openie_llm
-  api_key: AIzaSyDk5NMD5FkLorOMN6rXUL7JYgZoV7S3ymY
-  base_url: https://generativelanguage.googleapis.com/v1beta/openai/
-  model: gemini-2.0-flash
+  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
+  base_url: https://api.chatanywhere.tech/v1
+  model: gpt-4o-mini
   type: maas
 
 chat_llm: &chat_llm
-  api_key: AIzaSyDk5NMD5FkLorOMN6rXUL7JYgZoV7S3ymY
-  base_url: https://generativelanguage.googleapis.com/v1beta/openai/
-  model: gemini-2.0-flash
+  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
+  base_url: https://api.chatanywhere.tech/v1
+  model: gpt-4o-mini
   type: maas
 
 vectorize_model: &vectorize_model
@@ -25,7 +25,7 @@ log:
 project:
   biz_scene: default
   host_addr: http://127.0.0.1:8887
-  id: '3'
+  id: '1'
   language: en
   namespace: MedReports
 #------------project configuration end----------------#
@@ -35,14 +35,14 @@ kag_builder_pipeline:
   chain:
     type: unstructured_builder_chain # kag.builder.default_chain.DefaultUnstructuredBuilderChain
     extractor:
-      type: schema_free_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
+      type: schema_constraint_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
       llm: *openie_llm
       ner_prompt:
-        type: default_ner # kag.builder.prompt.default.ner.OpenIENERPrompt
+        type: MedReports_ner # kag.builder.prompt.default.ner.OpenIENERPrompt
       std_prompt:
-        type: default_std # kag.builder.prompt.default.std.OpenIEEntitystandardizationdPrompt
+        type: MedReports_std # kag.builder.prompt.default.std.OpenIEEntitystandardizationdPrompt
       triple_prompt:
-        type: default_triple # kag.builder.prompt.default.triple.OpenIETriplePrompt
+        type: MedReports_triple # kag.builder.prompt.default.triple.OpenIETriplePrompt
     reader:
       type: dict_reader # kag.builder.component.reader.dict_reader.DictReader
     post_processor:
@@ -59,7 +59,7 @@ kag_builder_pipeline:
   num_threads_per_chain: 1
   num_chains: 16
   scanner:
-    type: IU_Xray_dataset_scanner # kag.builder.component.scanner.dataset_scanner.IU_XRayCorpusScanner
+    type: IU_Xray_dataset_scanner # kag.builder.component.scanner.dataset_scanner.MusiqueCorpusScanner
 #------------kag-builder configuration end----------------#
 
 #------------kag-solver configuration start----------------#

@@ -35,14 +35,14 @@ kag_builder_pipeline:
   chain:
     type: unstructured_builder_chain # kag.builder.default_chain.DefaultUnstructuredBuilderChain
     extractor:
-      type: schema_free_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
+      type: schema_constraint_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
       llm: *openie_llm
       ner_prompt:
-        type: default_ner # kag.builder.prompt.default.ner.OpenIENERPrompt
+        type: MedReports_ner # kag.builder.prompt.default.ner.OpenIENERPrompt
       std_prompt:
-        type: default_std # kag.builder.prompt.default.std.OpenIEEntitystandardizationdPrompt
+        type: MedReports_std # kag.builder.prompt.default.std.OpenIEEntitystandardizationdPrompt
       triple_prompt:
-        type: default_triple # kag.builder.prompt.default.triple.OpenIETriplePrompt
+        type: MedReports_triple # kag.builder.prompt.default.triple.OpenIETriplePrompt
     reader:
       type: dict_reader # kag.builder.component.reader.dict_reader.DictReader
     post_processor:
