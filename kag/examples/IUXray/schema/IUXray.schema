@@ -1,0 +1,101 @@
+namespace IUXray
+
+AnatomicalStructure(解剖结构): ConceptType
+    hypernymPredicate: isA
+
+FindingType(发现类型): ConceptType
+    hypernymPredicate: isA
+
+FindingStatus(发现状态): ConceptType
+    hypernymPredicate: isA
+
+SeverityLevel(严重程度): ConceptType
+    hypernymPredicate: isA
+
+DeviceProcedureType(设备或程序类型): ConceptType
+    hypernymPredicate: isA
+
+DiseaseType(疾病类型): ConceptType
+    hypernymPredicate: isA
+
+Chunk(文本块): EntityType
+    desc: Represents a semantically coherent chunk of text from a medical report, enabling mutual indexing.
+    properties:
+        mainText(主要文本): Text
+            desc: The actual text content of the chunk.
+        summary(摘要): Text
+            desc: LLM-generated summary of the chunk content (optional).
+    relations:
+        mentionsFinding(提及发现): Finding
+            desc: Findings mentioned within this text chunk.
+        mentionsDeviceProcedure(提及设备或程序): MedicalDeviceOrProcedure
+            desc: Medical devices or procedures mentioned within this text chunk.
+        mentionsDisease(提及疾病): Disease
+            desc: Diseases mentioned within this text chunk.
+        mentionsAnatomy(提及解剖结构): AnatomicalStructure
+            desc: Anatomical structures mentioned within this text chunk.
+
+Finding(发现): EntityType
+    desc: Represents a specific medical observation or finding mentioned in a report.
+    properties:
+        size(大小): Text
+            desc: Size or measurement of the finding, if specified (e.g., '8mm', '1.2 cm').
+        location(位置): AnatomicalStructure
+            desc: The anatomical structure(s) where the finding is located.
+            constraint: MultiValue
+        findingType(发现分类): FindingType
+            desc: Classification of the finding (e.g., Opacity, Nodule, Cardiomegaly).
+        status(状态): FindingStatus
+            desc: The status of the finding (e.g., Stable, Increased, Resolved, Present).
+            constraint: MultiValue
+        severity(严重程度): SeverityLevel
+            desc: The severity level of the finding (e.g., Mild, Moderate, Severe).
+            constraint: MultiValue
+        associatedDisease(关联疾病): Disease
+            desc: Disease potentially indicated by or consistent with this finding.
+            constraint: MultiValue
+        supportingchunks(来源文本块): Chunk
+            desc: Link to the text chunk(s) from which this finding was extracted (KAG mutual indexing).
+            constraint: MultiValue
+
+Disease(疾病): EntityType
+    desc: Represents a specific disease or condition mentioned in the report.
+    properties:
+        diseaseType(疾病分类): DiseaseType
+            desc: Classification of the disease (e.g., COPD, Pneumonia, Arthritis).
+        supportingchunks(来源文本块): Chunk
+            desc: Link to the text chunk(s) mentioning this disease (KAG mutual indexing).
+            constraint: MultiValue
+    relations:
+        associatedFinding(关联发现): Finding
+            desc: Findings associated with this disease mentioned in the report.
+
+MedicalDeviceOrProcedure(医疗设备或程序): EntityType
+    desc: Represents a medical device, implant, or procedure mentioned in the report.
+    properties:
+        status(状态): Text
+            desc: Status of the device/procedure if mentioned (e.g., 'present', 'intact', 'removed').
+        location(位置): AnatomicalStructure
+            desc: Anatomical location related to the device or procedure.
+            constraint: MultiValue
+        deviceProcedureType(设备程序分类): DeviceProcedureType
+            desc: Classification of the device or procedure (e.g., Stent, Catheter, Sternotomy, Clip).
+        supportingchunks(来源文本块): Chunk
+            desc: Link to the text chunk(s) mentioning this device/procedure (KAG mutual indexing).
+            constraint: MultiValue
+
+MedicalReport(医学报告): EntityType
+    desc: Represents a single medical report document.
+    properties:
+        fullText(报告全文): Text
+            desc: The complete text content of the original medical report.
+        reportChunks(报告文本块): Chunk
+            desc: Links to all the text chunks derived from this report.
+            constraint: MultiValue
+    relations:
+        hasFinding(包含发现): Finding
+            desc: Clinical findings documented within this report.
+        mentionsDeviceProcedure(提及设备或程序): MedicalDeviceOrProcedure
+            desc: Medical devices or procedures mentioned in this report.
+        mentionsDisease(提及疾病): Disease
+            desc: Diseases mentioned or suggested in this report.
