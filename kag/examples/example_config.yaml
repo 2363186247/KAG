@@ -1,18 +1,18 @@
 #------------project configuration start----------------#
 openie_llm: &openie_llm
-  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
+  api_key: YOUR-API-KEY
   base_url: https://api.chatanywhere.tech/v1
   model: gpt-4o-mini
   type: maas
 
 chat_llm: &chat_llm
-  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
+  api_key: YOUR-API-KEY
   base_url: https://api.chatanywhere.tech/v1
   model: gpt-4o-mini
   type: maas
 
 vectorize_model: &vectorize_model
-  api_key: sk-Yj1wD2dA6bfUtHV9RECbzfUXCRYYLRh9kwYhskkYWsHghlag
+  api_key: YOUR-API-KEY
   base_url: https://api.chatanywhere.tech/v1
   model: text-embedding-3-small
   type: openai
