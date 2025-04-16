@@ -166,6 +166,54 @@ class IU_XRayCorpusScanner(ScannerABC):
 
         for item in corpus:
             # Extract `id` and `report`, handle cases where `report` might be null
+            if item.get("split") == "train":
+                data.append({
+                    "id": item.get("id"),
+                    "name": item.get("id"),
+                    "content": item.get("report") or "No report available"
+                })
+
+        return data
+    
+@ScannerABC.register("Harvard-FairVLMed")
+@ScannerABC.register("Harvard-FairVLMed_dataset_scanner")
+class IU_XRayCorpusScanner(ScannerABC):
+    """
+    A class for reading IU X-Ray dataset and converting it into a list of dictionaries, inheriting from `ScannerABC`.
+
+    This class is responsible for reading IU X-Ray corpus and converting it into a list of dictionaries.
+    It inherits from `ScannerABC` and overrides the necessary methods to handle IU X-Ray-specific operations.
+    """
+
+    @property
+    def input_types(self) -> Type[Input]:
+        return str
+
+    @property
+    def output_types(self) -> Type[Output]:
+        return Dict
+    
+    def load_data(self, input: Input, **kwargs) -> List[Output]:
+        """
+        Loads data from a JSON file containing IU X-Ray dataset and extracts `id` and `report`.
+
+        Args:
+            input (Input): The file path to the JSON file.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[Output]: A list of dictionaries with `id` and `report` fields.
+        """
+        if os.path.exists(str(input)):
+            with open(input, "r") as f:
+                corpus = json.load(f)
+        else:
+            corpus = json.loads(input)
+
+        data = []
+
+        for item in corpus:
+            # Extract `id` and `report`, handle cases where `report` might be null
             data.append({
                 "id": item.get("id"),
                 "name": item.get("id"),
